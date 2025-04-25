@@ -6,8 +6,8 @@ glm/1.0.1
 vulkan-headers/1.4.309.0
 
 [generators]
-CMakeToolchain
 CMakeDeps
+CMakeToolchain
 
 [layout]
 cmake_layout
