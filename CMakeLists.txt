@@ -35,6 +35,7 @@ target_sources(${PROJECT_NAME}
 PUBLIC
 PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/main.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/utils/color.cc
 )
 
 target_link_libraries(${PROJECT_NAME}
