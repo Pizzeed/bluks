@@ -16,7 +16,7 @@ project(
   DESCRIPTION "Arcade block stacking game"
   LANGUAGES CXX)
   
-find_package(spdlog REQUIRED)
+find_package(battery-embed REQUIRED CONFIG)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(imgui REQUIRED)
@@ -36,10 +36,17 @@ PUBLIC
 PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/main.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/utils/color.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/map/map.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/bluks_game/bluks_game.cc
+)
+
+b_embed(${PROJECT_NAME} 
+src/shaders/default/default.vert.glsl
+src/shaders/default/default.frag.glsl
 )
 
 target_link_libraries(${PROJECT_NAME}
-  spdlog::spdlog
+PRIVATE
   glfw
   glm::glm
   imgui::imgui

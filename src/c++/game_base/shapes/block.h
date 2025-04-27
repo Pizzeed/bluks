@@ -10,7 +10,6 @@ namespace bluks_game
   };
 
   class Block
-
   {
    public:
     Block(Color color, Point const& position)
