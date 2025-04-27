@@ -21,6 +21,7 @@ find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(imgui REQUIRED)
 find_package(VulkanHeaders REQUIRED)
+find_package(VulkanLoader REQUIRED)
   
 add_executable(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -38,12 +39,13 @@ PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/utils/color.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/map/map.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/bluks_game/bluks_game.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/graphics/app.cc
 )
 
-b_embed(${PROJECT_NAME} 
-src/shaders/default/default.vert.glsl
-src/shaders/default/default.frag.glsl
-)
+# b_embed(${PROJECT_NAME} 
+# src/shaders/default/default.vert.glsl
+# src/shaders/default/default.frag.glsl
+# )
 
 target_link_libraries(${PROJECT_NAME}
 PRIVATE
@@ -51,4 +53,5 @@ PRIVATE
   glm::glm
   imgui::imgui
   vulkan-headers::vulkan-headers
+  Vulkan::Loader
 )

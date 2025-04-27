@@ -1,6 +1,8 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <utils/types.h>
+#include <vulkan/vulkan.h>
 
 namespace bluks_gui
 {
@@ -27,5 +29,8 @@ namespace bluks_gui
     auto cleanup() -> void;
 
     GLFWwindow* m_window;
+    VkInstance m_instance;
+    u32 m_window_width = 800;
+    u32 m_window_height = 600;
   };
 }  // namespace bluks_gui

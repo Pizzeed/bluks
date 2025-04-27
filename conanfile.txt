@@ -4,6 +4,7 @@ imgui/1.91.8
 glfw/3.4
 glm/1.0.1
 vulkan-headers/1.4.309.0
+vulkan-loader/1.4.309.0
 
 [generators]
 CMakeDeps

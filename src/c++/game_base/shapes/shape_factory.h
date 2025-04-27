@@ -1,5 +1,5 @@
 #pragma once
-#include <game_base/map.h>
+#include <game_base/map/map.h>
 #include <game_base/shapes/block.h>
 
 namespace bluks_game
