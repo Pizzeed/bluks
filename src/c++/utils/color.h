@@ -7,10 +7,11 @@ namespace bluks_game
 {
   class Color
   {
-   public:
+    public:
+    
     Color() {};
     Color(u8 r, u8 g, u8 b, u8 a)
-      : m_r(r)
+   : m_r(r)
       , m_g(g)
       , m_b(b)
       , m_a(a) {};

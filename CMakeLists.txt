@@ -20,12 +20,12 @@ find_package(battery-embed REQUIRED CONFIG)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(imgui REQUIRED)
-find_package(VulkanHeaders REQUIRED)
-find_package(VulkanLoader REQUIRED)
+find_package(OpenGL)
   
 add_executable(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
+include_directories( ${OPENGL_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME}
 PUBLIC
 PRIVATE
@@ -39,7 +39,7 @@ PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/utils/color.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/map/map.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/bluks_game/bluks_game.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/graphics/app.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/graphics/graphics_handler.cc
 )
 
 # b_embed(${PROJECT_NAME} 
@@ -49,9 +49,8 @@ PRIVATE
 
 target_link_libraries(${PROJECT_NAME}
 PRIVATE
+  ${OPENGL_LIBRARIES}
   glfw
   glm::glm
   imgui::imgui
-  vulkan-headers::vulkan-headers
-  Vulkan::Loader
 )
