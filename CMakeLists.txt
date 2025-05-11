@@ -39,6 +39,7 @@ PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/utils/color.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/map/map.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/bluks_game/bluks_game.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/graphics/glad/glad.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/graphics/graphics_handler.cc
 )
 
