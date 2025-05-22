@@ -15,13 +15,12 @@ project(
   VERSION 0.0.1
   DESCRIPTION "Arcade block stacking game"
   LANGUAGES CXX)
-  
+
 find_package(battery-embed REQUIRED CONFIG)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
-find_package(imgui REQUIRED)
 find_package(OpenGL)
-  
+
 add_executable(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
@@ -43,7 +42,7 @@ PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/graphics/graphics_handler.cc
 )
 
-# b_embed(${PROJECT_NAME} 
+# b_embed(${PROJECT_NAME}
 # src/shaders/default/default.vert.glsl
 # src/shaders/default/default.frag.glsl
 # )
@@ -53,5 +52,4 @@ PRIVATE
   ${OPENGL_LIBRARIES}
   glfw
   glm::glm
-  imgui::imgui
 )

@@ -2,20 +2,19 @@
 #include <utils/types.h>
 #include <GLFW/glfw3.h>
 
-namespace bluks_gui
+namespace bluks::graphics
 {
   class GraphicsHandler
   {
    public:
     GraphicsHandler();
-    
-    auto run() -> void;
+    ~GraphicsHandler();
+
     static auto window() -> GLFWwindow* const;
+    auto run_graphics_loop() -> void;
 
    private:
-    
-    auto init_gui() -> void;
-    auto run_gui_loop() -> void;
+    auto init_graphics() -> void;
     auto cleanup() -> void;
 
     GLFWwindow* m_window;
@@ -23,4 +22,4 @@ namespace bluks_gui
     u32 m_window_width = 800;
     u32 m_window_height = 600;
   };
-}  // namespace bluks_gui
+}  // namespace bluks::graphics
