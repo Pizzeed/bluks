@@ -1,22 +1,22 @@
 #include <iostream>
 
-#include <graphics/glad/glad.h>
+#include <application/graphics/glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <graphics/graphics_handler.h>
+#include <application/application.h>
 
-namespace bluks::graphics
+namespace bluks::app
 {
   auto framebuffer_size_callback(GLFWwindow* window, int width, int height) -> void
   {
     glViewport(0, 0, width, height);
   }
 
-  GraphicsHandler::GraphicsHandler() { init_graphics(); }
+  Application::Application() { init_graphics(); }
 
-  GraphicsHandler::~GraphicsHandler() { cleanup(); }
+  Application::~Application() { cleanup(); }
 
-  auto GraphicsHandler::init_graphics() -> void
+  auto Application::init_graphics() -> void
   {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -37,7 +37,7 @@ namespace bluks::graphics
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
   }
 
-  auto GraphicsHandler::run_graphics_loop() -> void
+  auto Application::run_graphics_loop() -> void
   {
     while(! glfwWindowShouldClose(m_window)) {
       glfwSwapBuffers(m_window);
@@ -45,5 +45,5 @@ namespace bluks::graphics
     }
   }
 
-  auto GraphicsHandler::cleanup() -> void { glfwTerminate(); }
-}  // namespace bluks::graphics
+  auto Application::cleanup() -> void { glfwTerminate(); }
+}  // namespace bluks::app
