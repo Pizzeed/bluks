@@ -1,7 +1,11 @@
-#include <application/input_handler/input_handler.h>
+#include <application/input/input_handler.h>
 
 namespace bluks::app::input
 {
+  InputHandler::InputHandler()
+    : m_callbacks()
+  {}
+
   auto InputHandler::process_keys() -> void {}
 
   auto InputHandler::bind_to_action(Action const action, std::function<void()> const& callback)
