@@ -84,7 +84,7 @@ namespace bluks::game
     auto top = m_map->height() - 1;
     Shape shape {m_map};
     auto color = Color::red();
-    auto new_block = m_map->create_block({{color}, {hc + 1, top}});
+    auto new_block = m_map->create_block({{color}, {hc, top - 1}});
     if(not new_block) {
       result = false;
       return shape;
@@ -96,7 +96,7 @@ namespace bluks::game
       return shape;
     }
     shape.blocks().push_back(new_block);
-    new_block = m_map->create_block({{color}, {hc, top - 1}});
+    new_block = m_map->create_block({{color}, {hc + 1, top}});
     if(not new_block) {
       result = false;
       return shape;
@@ -118,7 +118,7 @@ namespace bluks::game
     auto top = m_map->height() - 1;
     Shape shape {m_map};
     auto color = Color::green();
-    auto new_block = m_map->create_block({{color}, {hc - 1, top}});
+    auto new_block = m_map->create_block({{color}, {hc, top - 1}});
     if(not new_block) {
       result = false;
       return shape;
@@ -130,7 +130,7 @@ namespace bluks::game
       return shape;
     }
     shape.blocks().push_back(new_block);
-    new_block = m_map->create_block({{color}, {hc, top - 1}});
+    new_block = m_map->create_block({{color}, {hc - 1, top}});
     if(not new_block) {
       result = false;
       return shape;
