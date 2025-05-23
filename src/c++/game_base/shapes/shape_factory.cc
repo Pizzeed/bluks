@@ -1,4 +1,6 @@
+#include <random>
 #include <stdexcept>
+
 #include <game_base/map/map.h>
 #include <game_base/shapes/block.h>
 #include <game_base/shapes/shape_factory.h>
@@ -15,7 +17,17 @@ namespace bluks::game
       mode = RandomizerMode::Chaotic;  // TODO
   }
 
-  auto ShapeFactory::create_random_shape(bool& result) -> Shape {}
+  auto ShapeFactory::create_random_shape(bool& result) -> Shape
+  {
+    static std::mt19937 rng(std::random_device {}());
+    static std::uniform_int_distribution<int> gen(0, 6);
+
+    switch(m_mode) {
+      case RandomizerMode::Balanced:  // Todo
+      case RandomizerMode::Random:    // Todo
+      case RandomizerMode::Chaotic: return create_shape(static_cast<ShapeType>(gen(rng)), result);
+    }
+  }
 
   auto ShapeFactory::create_shape(ShapeType type, bool& result) -> Shape
   {
