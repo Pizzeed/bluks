@@ -1,16 +1,21 @@
 #include <iostream>
 
 #include <battery/embed.hpp>
+#include "utils/color.h"
 #include <application/graphics/glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <game_base/shapes/block.h>
 #include <application/input/input_handler.h>
 #include <application/application.h>
 
 namespace bluks::app
 {
-  auto framebuffer_size_callback(GLFWwindow* window, int width, int height) -> void
+  auto Application::framebuffer_size_callback(GLFWwindow* window, int width, int height) -> void
   {
+    Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    app->m_window_width = width;
+    app->m_window_height = height;
     glViewport(0, 0, width, height);
   }
 
@@ -48,7 +53,8 @@ namespace bluks::app
       glfwTerminate();
       return;
     }
-    glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
+    glfwSetWindowUserPointer(m_window, this);
+    glfwSetFramebufferSizeCallback(m_window, &Application::framebuffer_size_callback);
 
     u32 vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -103,29 +109,13 @@ namespace bluks::app
     while(! glfwWindowShouldClose(m_window)) {
       m_input_handler.process_keys();
 
-      float vertices[] = {
-        0.5f,
-        0.5f,
-        0.0f,  // top right
-        0.5f,
-        -0.5f,
-        0.0f,  // bottom right
-        -0.5f,
-        -0.5f,
-        0.0f,  // bottom left
-        -0.5f,
-        0.5f,
-        0.0f   // top left
-      };
-      unsigned int indices[] = {
-        // note that we start from 0!
-        0,
-        1,
-        3,  // first Triangle
-        1,
-        2,
-        3   // second Triangle
-      };
+      auto vertices = std::vector<float>();
+      auto indices = std::vector<u32>();
+      auto map_verts = get_gl_map_background_vertices();
+      auto map_inds = std::vector<u32> {0, 1, 3, 1, 2, 3};
+      vertices.insert(vertices.end(), map_verts.cbegin(), map_verts.cend());
+      indices.insert(indices.end(), map_inds.cbegin(), map_inds.cend());
+
       u32 VBO, VAO, EBO;
       glGenVertexArrays(1, &VAO);
       glGenBuffers(1, &VBO);
@@ -133,16 +123,37 @@ namespace bluks::app
       glBindVertexArray(VAO);
 
       glBindBuffer(GL_ARRAY_BUFFER, VBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+      glBufferData(
+        GL_ARRAY_BUFFER,
+        vertices.size() * sizeof(float),
+        vertices.data(),
+        GL_STATIC_DRAW
+      );
 
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+      glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        indices.size() * sizeof(u32),
+        indices.data(),
+        GL_STATIC_DRAW
+      );
 
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+      // position attribute
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
       glEnableVertexAttribArray(0);
+      // color attribute
+      glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        6 * sizeof(float),
+        (void*)(3 * sizeof(float))
+      );
+
+      glEnableVertexAttribArray(1);
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);
-
       glBindVertexArray(0);
 
       glClearColor(.1f, 0.05f, 0.2f, 1.0f);
@@ -150,7 +161,6 @@ namespace bluks::app
       glUseProgram(shaderProgram);
       glBindVertexArray(VAO);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
       glfwSwapBuffers(m_window);
       glfwPollEvents();
     }
@@ -161,4 +171,51 @@ namespace bluks::app
   auto Application::window() -> GLFWwindow* const { return m_window; }
 
   auto Application::input_handler() -> input::InputHandler const& { return m_input_handler; }
+
+  auto Application::get_gl_map_background_vertices() -> std::vector<float>
+  {
+    game::Color map_color {"#111111"};
+
+    auto aspect_ratio = static_cast<float>(m_window_width) / m_window_height;
+    auto map_aspect_ratio = static_cast<float>(m_game.map().width()) / m_game.map().height();
+    float scale_x, scale_y;
+
+    if(map_aspect_ratio <= aspect_ratio) {
+      auto m_actual_map_height = m_window_height * 0.95f;
+      auto block_width = m_actual_map_height / m_game.map().height();
+      auto m_actual_map_width = block_width * m_game.map().width();
+
+      scale_x = m_actual_map_width / m_window_width;
+      scale_y = m_actual_map_height / m_window_height;
+    }
+    else {
+      auto m_actual_map_width = m_window_width * 0.90f;
+      auto block_height = m_actual_map_width / m_game.map().width();
+      auto m_actual_map_height = block_height * m_game.map().height();
+
+      scale_x = m_actual_map_width / m_window_width;
+      scale_y = m_actual_map_height / m_window_height;
+    }
+
+    auto r = map_color.r() / 255.f;
+    auto g = map_color.g() / 255.f;
+    auto b = map_color.b() / 255.f;
+
+    // clang-format off
+    return {
+      scale_x, scale_y, 0.0f, r, g, b,
+      scale_x, -scale_y, 0.0f, r, g, b,
+      -scale_x, -scale_y, 0.0f, r, g, b,
+      -scale_x, scale_y, 0.0f, r, g, b
+    };
+    // clang-format on
+  }
+
+  auto Application::get_gl_block_vertices(bluks::game::Block const& block) -> std::vector<float>
+  {
+    // auto block_x =
+
+    // return {block.position().x, block.position().y, block.color().r(), block.color().g(),
+    // block.color().b()};
+  }
 }  // namespace bluks::app
