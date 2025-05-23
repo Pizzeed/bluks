@@ -8,7 +8,6 @@ endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_COMPILER clang++)
 
 project(
   bluks
