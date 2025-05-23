@@ -43,10 +43,12 @@ PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/input/input_handler.cc
 )
 
-# b_embed(${PROJECT_NAME}
-# src/shaders/default/default.vert.glsl
-# src/shaders/default/default.frag.glsl
-# )
+b_embed(${PROJECT_NAME}
+src/shaders/default/default.vert.glsl
+)
+b_embed(${PROJECT_NAME}
+src/shaders/default/default.frag.glsl
+)
 
 target_link_libraries(${PROJECT_NAME}
 PRIVATE

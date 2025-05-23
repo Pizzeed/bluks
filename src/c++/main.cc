@@ -2,7 +2,7 @@
 
 int main()
 {
-  auto handler = bluks::app::Application {};
-  handler.run_graphics_loop();
+  auto app = bluks::app::Application::get();
+  app->run_graphics_loop();
   return 0;
 }
