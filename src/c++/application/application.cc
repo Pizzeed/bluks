@@ -1,17 +1,14 @@
 #include <iostream>
+#include <chrono>
 
 #include <battery/embed.hpp>
-#include "utils/color.h"
 #include <application/graphics/glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <utils/color.h>
 #include <game_base/shapes/block.h>
 #include <application/input/input_handler.h>
 #include <application/application.h>
-
-#include <random>
-#include <sstream>
-#include <iomanip>
 
 namespace bluks::app
 {
@@ -111,8 +108,19 @@ namespace bluks::app
   auto Application::run_graphics_loop() -> void
   {
     using Action = input::InputHandler::Action;
+    using namespace std::chrono;
+
+    auto last_time = steady_clock::now();
 
     while(! glfwWindowShouldClose(m_window)) {
+      auto current_time = steady_clock::now();
+      auto elapsed = duration_cast<seconds>(current_time - last_time);
+
+      if(elapsed.count() >= m_game.tick_period()) {
+        m_game.tick();
+        last_time = current_time;
+      }
+
       m_input_handler.process_keys();
 
       auto vertices = std::vector<float>();

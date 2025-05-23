@@ -11,6 +11,10 @@ namespace bluks::game
 
   auto Map::create_block(Block&& block) -> Block*
   {
+    for(auto const& ex_blk : m_blocks)
+      if(ex_blk.position() == block.position())
+        return nullptr;
+
     return &m_blocks.emplace_back(std::move(block));
   }
 }  // namespace bluks::game
