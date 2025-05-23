@@ -36,6 +36,10 @@ namespace bluks::app
 
     u32 m_window_width = 800;
     u32 m_window_height = 600;
+    float m_map_x = .0;
+    float m_map_y = .0;
+    float m_actual_map_width = .0;
+    float m_actual_map_height = .0;
 
     u32 shaderProgram;
   };

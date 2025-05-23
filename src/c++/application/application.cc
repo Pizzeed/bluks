@@ -9,6 +9,10 @@
 #include <application/input/input_handler.h>
 #include <application/application.h>
 
+#include <random>
+#include <sstream>
+#include <iomanip>
+
 namespace bluks::app
 {
   auto Application::framebuffer_size_callback(GLFWwindow* window, int width, int height) -> void
@@ -106,6 +110,8 @@ namespace bluks::app
 
   auto Application::run_graphics_loop() -> void
   {
+    using Action = input::InputHandler::Action;
+
     while(! glfwWindowShouldClose(m_window)) {
       m_input_handler.process_keys();
 
@@ -115,6 +121,20 @@ namespace bluks::app
       auto map_inds = std::vector<u32> {0, 1, 3, 1, 2, 3};
       vertices.insert(vertices.end(), map_verts.cbegin(), map_verts.cend());
       indices.insert(indices.end(), map_inds.cbegin(), map_inds.cend());
+
+      for(auto const& block : m_game.map().blocks()) {
+        auto block_verts = get_gl_block_vertices(block);
+        u32 vertex_offset = vertices.size() / 6;
+        vertices.insert(vertices.end(), block_verts.cbegin(), block_verts.cend());
+        u32 block_inds[6] =
+          {vertex_offset + 0,
+           vertex_offset + 1,
+           vertex_offset + 3,
+           vertex_offset + 1,
+           vertex_offset + 2,
+           vertex_offset + 3};
+        indices.insert(indices.end(), block_inds, block_inds + 6);
+      }
 
       u32 VBO, VAO, EBO;
       glGenVertexArrays(1, &VAO);
@@ -155,12 +175,12 @@ namespace bluks::app
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
-
+      // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       glClearColor(.1f, 0.05f, 0.2f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
       glUseProgram(shaderProgram);
       glBindVertexArray(VAO);
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
       glfwSwapBuffers(m_window);
       glfwPollEvents();
     }
@@ -181,17 +201,17 @@ namespace bluks::app
     float scale_x, scale_y;
 
     if(map_aspect_ratio <= aspect_ratio) {
-      auto m_actual_map_height = m_window_height * 0.95f;
+      m_actual_map_height = m_window_height * 0.95f;
       auto block_width = m_actual_map_height / m_game.map().height();
-      auto m_actual_map_width = block_width * m_game.map().width();
+      m_actual_map_width = block_width * m_game.map().width();
 
       scale_x = m_actual_map_width / m_window_width;
       scale_y = m_actual_map_height / m_window_height;
     }
     else {
-      auto m_actual_map_width = m_window_width * 0.90f;
+      m_actual_map_width = m_window_width * 0.90f;
       auto block_height = m_actual_map_width / m_game.map().width();
-      auto m_actual_map_height = block_height * m_game.map().height();
+      m_actual_map_height = block_height * m_game.map().height();
 
       scale_x = m_actual_map_width / m_window_width;
       scale_y = m_actual_map_height / m_window_height;
@@ -200,7 +220,8 @@ namespace bluks::app
     auto r = map_color.r() / 255.f;
     auto g = map_color.g() / 255.f;
     auto b = map_color.b() / 255.f;
-
+    m_map_x = -scale_x;
+    m_map_y = -scale_y;
     // clang-format off
     return {
       scale_x, scale_y, 0.0f, r, g, b,
@@ -213,9 +234,22 @@ namespace bluks::app
 
   auto Application::get_gl_block_vertices(bluks::game::Block const& block) -> std::vector<float>
   {
-    // auto block_x =
+    auto block_width_ndc = m_actual_map_width / m_window_width * 2.0f / m_game.map().width();
+    auto block_height_ndc = m_actual_map_height / m_window_height * 2.0f / m_game.map().height();
 
-    // return {block.position().x, block.position().y, block.color().r(), block.color().g(),
-    // block.color().b()};
+    auto bl_x = m_map_x + block.position().x * block_width_ndc;
+    auto bl_y = m_map_y + block.position().y * block_height_ndc;
+
+    auto r = block.color().r() / 255.f;
+    auto g = block.color().g() / 255.f;
+    auto b = block.color().b() / 255.f;
+
+    // clang-format off
+return {
+  bl_x, bl_y, 0.1f, r, g, b,                                       // bottom-left
+  bl_x, bl_y + block_height_ndc, 0.1f, r, g, b,                    // top-left
+  bl_x + block_width_ndc, bl_y + block_height_ndc, 0.1f, r, g, b,  // top-right
+  bl_x + block_width_ndc, bl_y, 0.1f, r, g, b                      // bottom-right
+};
   }
 }  // namespace bluks::app
