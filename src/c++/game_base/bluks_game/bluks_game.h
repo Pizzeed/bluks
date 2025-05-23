@@ -27,7 +27,7 @@ namespace bluks::game
 
     inline auto map() -> Map& { return m_map; }
 
-    inline auto current_shape() -> Shape const& { return m_current_shape; }
+    inline auto current_shape() -> Shape& { return m_current_shape; }
 
     inline auto tick_period() -> float { return m_tick_period; }
 

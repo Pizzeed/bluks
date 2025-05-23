@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
 #include <application/input/input_handler.h>
+#include <iostream>
 #include <unordered_map>
 #include <functional>
 #include <chrono>
@@ -21,9 +22,9 @@ namespace bluks::app::input
      {GLFW_KEY_SPACE, Action::Drop}};
 
   InputHandler::InputHandler(GLFWwindow* window)
-    : m_callbacks()
-    , m_window(window)
+    : m_window(window)
     , m_key_states()
+    , m_callbacks()
   {}
 
   auto InputHandler::process_keys() -> void
@@ -33,15 +34,17 @@ namespace bluks::app::input
       int state = glfwGetKey(m_window, key);
       bool is_down = (state == GLFW_PRESS);
       auto& ks = m_key_states[key];
-
       if(is_down) {
         if(! ks.is_pressed) {
           // First time key is pressed
           ks.is_pressed = true;
           ks.first_pressed = now;
           ks.last_repeat = now;
-          for(auto const& cb : m_callbacks[action])
-            cb();
+          if(auto it = m_callbacks.find(action); it != m_callbacks.end()) {
+            for(auto const& cb : it->second) {
+              cb();
+            }
+          }
         }
         else {
           auto time_held = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -53,10 +56,13 @@ namespace bluks::app::input
           )
                                    .count();
 
-          if(time_held > 1'000 && time_since_last >= 250) {
+          if(time_held > 250 && time_since_last >= 50) {
             ks.last_repeat = now;
-            for(auto const& cb : m_callbacks[action])
-              cb();
+            if(auto it = m_callbacks.find(action); it != m_callbacks.end()) {
+              for(auto const& cb : it->second) {
+                cb();
+              }
+            }
           }
         }
       }
@@ -69,6 +75,11 @@ namespace bluks::app::input
   auto InputHandler::bind_to_action(Action const action, std::function<void()> const& callback)
     -> void
   {
-    m_callbacks[action].push_back(callback);
+    if(auto it = m_callbacks.find(action); it != m_callbacks.end()) {
+      it->second.push_back(callback);
+    }
+    else {
+      m_callbacks.insert({action, {callback}});
+    }
   }
 }  // namespace bluks::app::input

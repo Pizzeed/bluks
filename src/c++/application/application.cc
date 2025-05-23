@@ -27,11 +27,22 @@ namespace bluks::app
   }
 
   Application::Application()
-    : m_input_handler(nullptr)
-    , m_game()
+    : m_game()
   {
     init_graphics();
-    m_input_handler = input::InputHandler(m_window);
+    m_input_handler = std::make_unique<input::InputHandler>(m_window);
+
+    m_input_handler->bind_to_action(input::InputHandler::Action::Down, [this]() { m_game.tick(); });
+
+    m_input_handler->bind_to_action(input::InputHandler::Action::Left, [this]() {
+      m_game.current_shape().move_left();
+    });
+    m_input_handler->bind_to_action(input::InputHandler::Action::Right, [this]() {
+      m_game.current_shape().move_right();
+    });
+    m_input_handler->bind_to_action(input::InputHandler::Action::Left, [] {});
+
+    m_game.start();
   }
 
   Application::~Application() { cleanup(); }
@@ -103,7 +114,6 @@ namespace bluks::app
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    m_game.start();
   }
 
   auto Application::run_graphics_loop() -> void
@@ -121,8 +131,8 @@ namespace bluks::app
         m_game.tick();
         last_time = current_time;
       }
-
-      m_input_handler.process_keys();
+      glfwPollEvents();
+      m_input_handler->process_keys();
 
       auto vertices = std::vector<float>();
       auto indices = std::vector<u32>();
@@ -191,15 +201,12 @@ namespace bluks::app
       glBindVertexArray(VAO);
       glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
       glfwSwapBuffers(m_window);
-      glfwPollEvents();
     }
   }
 
   auto Application::cleanup() -> void { glfwTerminate(); }
 
   auto Application::window() -> GLFWwindow* const { return m_window; }
-
-  auto Application::input_handler() -> input::InputHandler const& { return m_input_handler; }
 
   auto Application::get_gl_map_background_vertices() -> std::vector<float>
   {

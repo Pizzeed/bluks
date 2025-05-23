@@ -37,7 +37,7 @@ namespace bluks::app::input
     };
 
     GLFWwindow* m_window = nullptr;
-    std::unordered_map<Action, std::vector<std::function<void()>>> m_callbacks = {};
+    std::unordered_map<Action, std::vector<std::function<void()>>> m_callbacks;
     std::unordered_map<int, KeyState> m_key_states;
   };
 }  // namespace bluks::app::input

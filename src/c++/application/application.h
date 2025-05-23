@@ -19,7 +19,6 @@ namespace bluks::app
 
     static auto get() -> Application*;
     auto window() -> GLFWwindow* const;
-    auto input_handler() -> input::InputHandler const&;
     auto run_graphics_loop() -> void;
 
    private:
@@ -31,7 +30,7 @@ namespace bluks::app
     auto get_gl_map_background_vertices() -> std::vector<float>;
 
     bluks::game::BluksGame m_game;
-    input::InputHandler m_input_handler;
+    std::unique_ptr<input::InputHandler> m_input_handler = nullptr;
     GLFWwindow* m_window;
 
     u32 m_window_width = 800;
