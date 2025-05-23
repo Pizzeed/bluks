@@ -33,9 +33,11 @@ namespace bluks::game
 
     inline auto paused() -> bool { return m_paused; }
 
-   private:
+    inline auto ongoing() -> bool { return m_ongoing; }
+
     auto spawn_new_shape() -> void;
 
+   private:
     u32 m_score = 0;
     float m_tick_period = 1;  // sec
     bool m_paused = false;

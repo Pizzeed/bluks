@@ -41,7 +41,7 @@ namespace bluks::game
 
     inline static auto green() -> Color { return {0, 255, 0}; }
 
-    inline static auto blue() -> Color { return {255, 255, 0}; }
+    inline static auto blue() -> Color { return {0, 0, 255}; }
 
     inline static auto yellow() -> Color { return {255, 255, 0}; }
 

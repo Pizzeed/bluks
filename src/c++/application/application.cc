@@ -32,15 +32,31 @@ namespace bluks::app
     init_graphics();
     m_input_handler = std::make_unique<input::InputHandler>(m_window);
 
-    m_input_handler->bind_to_action(input::InputHandler::Action::Down, [this]() { m_game.tick(); });
+    m_input_handler->bind_to_action(input::InputHandler::Action::Down, [this]() {
+      if(m_game.ongoing())
+        m_game.tick();
+    });
 
     m_input_handler->bind_to_action(input::InputHandler::Action::Left, [this]() {
-      m_game.current_shape().move_left();
+      if(m_game.ongoing())
+        m_game.current_shape().move_left();
     });
     m_input_handler->bind_to_action(input::InputHandler::Action::Right, [this]() {
-      m_game.current_shape().move_right();
+      if(m_game.ongoing())
+        m_game.current_shape().move_right();
     });
-    m_input_handler->bind_to_action(input::InputHandler::Action::Left, [] {});
+
+    m_input_handler->bind_to_action(input::InputHandler::Action::Drop, [this]() {
+      if(m_game.ongoing()) {
+        m_game.current_shape().drop();
+        m_game.spawn_new_shape();
+      }
+    });
+    m_input_handler->bind_to_action(input::InputHandler::Action::Up, [this]() {
+      if(m_game.ongoing()) {
+        m_game.current_shape().rotate_clockwise();
+      }
+    });
 
     m_game.start();
   }

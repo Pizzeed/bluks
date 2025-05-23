@@ -1,6 +1,5 @@
 #include <GLFW/glfw3.h>
 #include <application/input/input_handler.h>
-#include <iostream>
 #include <unordered_map>
 #include <functional>
 #include <chrono>
