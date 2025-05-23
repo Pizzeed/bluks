@@ -11,52 +11,50 @@ namespace bluks::game
   auto BluksGame::tick() -> void
   {
     if(m_ongoing && not m_current_shape.move_down()) {
-      // Check for filled rows
-      auto& blocks = m_map.blocks();
-      std::vector<int> row_counts(m_map.height(), 0);
-      // Count how many blocks are in each row
-      for(auto const& block : blocks) {
-        if(block->position().y >= 0 && block->position().y < m_map.height()) {
-          row_counts[block->position().y]++;
-        }
-      }
-
-      // // Identify full rows
-      // std::vector<int> full_rows;
-      // for(int y = 0; y < m_map.height(); ++y) {
-      //   if(row_counts[y] == m_map.width()) {
-      //     full_rows.push_back(y);
-      //   }
-      // }
-
-      // if(! full_rows.empty()) {
-      //   // Remove blocks in full rows
-      //   blocks.erase(
-      //     std::remove_if(
-      //       blocks.begin(),
-      //       blocks.end(),
-      //       [&](Block const& b) {
-      //         return std::find(full_rows.begin(), full_rows.end(), b.position().y)
-      //             != full_rows.end();
-      //       }
-      //     ),
-      //     blocks.end()
-      //   );
-
-      //   // Move down blocks above cleared rows
-      //   std::sort(full_rows.begin(), full_rows.end());
-      //   for(int cleared_y : full_rows) {
-      //     for(auto& block : blocks) {
-      //       if(block->position().y < cleared_y) {
-      //         block->position().y++;
-      //       }
-      //     }
-      //   }
-
-      //   // Update score: +100 points per cleared row
-      //   m_score += static_cast<int>(full_rows.size()) * 100;
+      check_lines();
       spawn_new_shape();
     }
+  }
+
+  auto BluksGame::check_lines() -> void
+  {
+    auto& blocks = m_map.blocks();
+    std::vector<int> row_counts(m_map.height(), 0);
+    for(auto const& block : blocks) {
+      if(block->position().y >= 0 && block->position().y < m_map.height()) {
+        row_counts[block->position().y]++;
+      }
+    }
+
+    std::vector<int> full_rows;
+    for(int y = 0; y < m_map.height(); ++y) {
+      if(row_counts[y] == m_map.width()) {
+        full_rows.push_back(y);
+      }
+    }
+
+    if(not full_rows.empty()) {
+      blocks.erase(
+        std::remove_if(
+          blocks.begin(),
+          blocks.end(),
+          [&](std::shared_ptr<Block> const& b) {
+            return std::find(full_rows.begin(), full_rows.end(), b->position().y)
+                != full_rows.end();
+          }
+        ),
+        blocks.end()
+      );
+
+      std::sort(full_rows.begin(), full_rows.end());
+      for(auto& block : blocks) {
+        if(block->position().y > full_rows.back()) {
+          block->position().y -= full_rows.size();
+        }
+      }
+    }
+
+    m_score += static_cast<int>(full_rows.size()) * 100;
   }
 
   auto BluksGame::spawn_new_shape() -> void

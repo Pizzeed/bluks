@@ -49,6 +49,7 @@ namespace bluks::app
     m_input_handler->bind_to_action(input::InputHandler::Action::Drop, [this]() {
       if(m_game.ongoing()) {
         m_game.current_shape().drop();
+        m_game.check_lines();
         m_game.spawn_new_shape();
       }
     });

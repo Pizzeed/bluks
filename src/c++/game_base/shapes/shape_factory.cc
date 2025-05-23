@@ -198,13 +198,13 @@ namespace bluks::game
       return shape;
     }
     shape.blocks().push_back(new_block);
-    new_block = m_map->create_block({{color}, {hc + 1, top}});
+    new_block = m_map->create_block({{color}, {hc + 1, top - 1}});
     if(not new_block) {
       result = false;
       return shape;
     }
     shape.blocks().push_back(new_block);
-    new_block = m_map->create_block({{color}, {hc - 1, top - 1}});
+    new_block = m_map->create_block({{color}, {hc - 1, top}});
     if(not new_block) {
       result = false;
       return shape;

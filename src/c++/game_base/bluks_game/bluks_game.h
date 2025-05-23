@@ -37,6 +37,8 @@ namespace bluks::game
 
     auto spawn_new_shape() -> void;
 
+    auto check_lines() -> void;
+
    private:
     u32 m_score = 0;
     float m_tick_period = 1;  // sec
