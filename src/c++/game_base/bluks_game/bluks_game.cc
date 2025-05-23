@@ -1,17 +1,93 @@
-#include <game_base/bluks_game/bluks_game.h>
+#include <algorithm>
 #include <iostream>
+
+#include <game_base/shapes/shape_factory.h>
+#include <game_base/bluks_game/bluks_game.h>
 
 namespace bluks::game
 {
   BluksGame::BluksGame() {}
 
-  auto BluksGame::tick() -> void {}
+  auto BluksGame::tick() -> void
+  {
+    if(m_ongoing && not m_current_shape.move_down()) {
+      // Check for filled rows
+      auto& blocks = m_map.blocks();
+      std::vector<int> row_counts(m_map.height(), 0);
+      // Count how many blocks are in each row
+      for(auto const& block : blocks) {
+        if(block->position().y >= 0 && block->position().y < m_map.height()) {
+          row_counts[block->position().y]++;
+        }
+      }
 
-  auto BluksGame::spawn_new_shape() -> Shape const& {}
+      // // Identify full rows
+      // std::vector<int> full_rows;
+      // for(int y = 0; y < m_map.height(); ++y) {
+      //   if(row_counts[y] == m_map.width()) {
+      //     full_rows.push_back(y);
+      //   }
+      // }
 
-  auto BluksGame::start() -> void {}
+      // if(! full_rows.empty()) {
+      //   // Remove blocks in full rows
+      //   blocks.erase(
+      //     std::remove_if(
+      //       blocks.begin(),
+      //       blocks.end(),
+      //       [&](Block const& b) {
+      //         return std::find(full_rows.begin(), full_rows.end(), b.position().y)
+      //             != full_rows.end();
+      //       }
+      //     ),
+      //     blocks.end()
+      //   );
 
-  auto BluksGame::pause() -> void {}
+      //   // Move down blocks above cleared rows
+      //   std::sort(full_rows.begin(), full_rows.end());
+      //   for(int cleared_y : full_rows) {
+      //     for(auto& block : blocks) {
+      //       if(block->position().y < cleared_y) {
+      //         block->position().y++;
+      //       }
+      //     }
+      //   }
 
-  auto BluksGame::unpause() -> void {}
+      //   // Update score: +100 points per cleared row
+      //   m_score += static_cast<int>(full_rows.size()) * 100;
+      spawn_new_shape();
+    }
+  }
+
+  auto BluksGame::spawn_new_shape() -> void
+  {
+    static ShapeFactory factory {&m_map};
+    bool res = false;
+    m_current_shape = factory.create_random_shape(res);
+    if(not res) {
+      game_over();
+    }
+  }
+
+  auto BluksGame::start() -> void
+  {
+    m_score = 0;
+    m_ongoing = true;
+    m_map.blocks().clear();
+    spawn_new_shape();
+  }
+
+  auto BluksGame::game_over() -> void
+  {
+    m_ongoing = false;
+    std::cout << "Game Over!" << std::endl;
+  }
+
+  auto BluksGame::pause() -> void
+  {  // TODO
+  }
+
+  auto BluksGame::unpause() -> void
+  {  // TODO
+  }
 }  // namespace bluks::game

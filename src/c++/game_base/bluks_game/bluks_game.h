@@ -15,6 +15,8 @@ namespace bluks::game
 
     auto start() -> void;
 
+    auto game_over() -> void;
+
     auto pause() -> void;
 
     auto unpause() -> void;
@@ -27,20 +29,18 @@ namespace bluks::game
 
     inline auto current_shape() -> Shape const& { return m_current_shape; }
 
-    inline auto next_shape() -> Shape const& { return m_next_shape; }
-
     inline auto tick_period() -> float { return m_tick_period; }
 
     inline auto paused() -> bool { return m_paused; }
 
    private:
-    auto spawn_new_shape() -> Shape const&;
+    auto spawn_new_shape() -> void;
 
-    u32 score = 0;
+    u32 m_score = 0;
     float m_tick_period = 1;  // sec
     bool m_paused = false;
-    Shape m_next_shape = {};
-    Shape m_current_shape = {};
+    bool m_ongoing = false;
+    Shape m_current_shape = {&m_map};
     Map m_map = {};
     GameSettings m_settings = {};
   };

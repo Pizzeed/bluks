@@ -38,6 +38,8 @@ PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/utils/color.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/map/map.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/bluks_game/bluks_game.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/shapes/shape.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/shapes/shape_factory.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/graphics/glad/glad.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/application.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/input/input_handler.cc

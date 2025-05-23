@@ -26,7 +26,7 @@ namespace bluks::game
       Balanced
     };
 
-    ShapeFactory(Map* map, RandomizerMode mode = RandomizerMode::Balanced);
+    ShapeFactory(Map* map, RandomizerMode mode = RandomizerMode::Chaotic);
 
     auto create_random_shape(bool& result) -> Shape;
 

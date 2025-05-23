@@ -103,6 +103,7 @@ namespace bluks::app
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    m_game.start();
   }
 
   auto Application::run_graphics_loop() -> void
@@ -131,7 +132,7 @@ namespace bluks::app
       indices.insert(indices.end(), map_inds.cbegin(), map_inds.cend());
 
       for(auto const& block : m_game.map().blocks()) {
-        auto block_verts = get_gl_block_vertices(block);
+        auto block_verts = get_gl_block_vertices(*block.get());
         u32 vertex_offset = vertices.size() / 6;
         vertices.insert(vertices.end(), block_verts.cbegin(), block_verts.cend());
         u32 block_inds[6] =

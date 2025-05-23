@@ -48,7 +48,7 @@ namespace bluks::game
   {
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
-    Shape shape {};
+    Shape shape {m_map};
     auto color = Color::purple();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
@@ -82,7 +82,7 @@ namespace bluks::game
   {
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
-    Shape shape {};
+    Shape shape {m_map};
     auto color = Color::red();
     auto new_block = m_map->create_block({{color}, {hc + 1, top}});
     if(not new_block) {
@@ -116,7 +116,7 @@ namespace bluks::game
   {
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
-    Shape shape {};
+    Shape shape {m_map};
     auto color = Color::green();
     auto new_block = m_map->create_block({{color}, {hc - 1, top}});
     if(not new_block) {
@@ -136,7 +136,7 @@ namespace bluks::game
       return shape;
     }
     shape.blocks().push_back(new_block);
-    new_block = m_map->create_block({{color}, {hc + 1, top - 1}});
+    new_block = m_map->create_block({{color}, {hc - 1, top - 1}});
     if(not new_block) {
       result = false;
       return shape;
@@ -150,7 +150,7 @@ namespace bluks::game
   {
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
-    Shape shape {};
+    Shape shape {m_map};
     auto color = Color::white();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
@@ -184,7 +184,7 @@ namespace bluks::game
   {
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
-    Shape shape {};
+    Shape shape {m_map};
     auto color = Color::yellow();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
@@ -218,7 +218,7 @@ namespace bluks::game
   {
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
-    Shape shape {};
+    Shape shape {m_map};
     auto color = Color::blue();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
@@ -252,7 +252,7 @@ namespace bluks::game
   {
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
-    Shape shape {};
+    Shape shape {m_map};
     auto color = Color::orange();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
