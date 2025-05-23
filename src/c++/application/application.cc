@@ -3,6 +3,7 @@
 #include <application/graphics/glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <application/input/input_handler.h>
 #include <application/application.h>
 
 namespace bluks::app
@@ -12,7 +13,18 @@ namespace bluks::app
     glViewport(0, 0, width, height);
   }
 
-  Application::Application() { init_graphics(); }
+  auto Application::get() -> Application*
+  {
+    static Application inst;
+    return &inst;
+  }
+
+  Application::Application()
+    : m_input_handler(nullptr)
+  {
+    init_graphics();
+    m_input_handler = input::InputHandler(m_window);
+  }
 
   Application::~Application() { cleanup(); }
 
@@ -46,4 +58,8 @@ namespace bluks::app
   }
 
   auto Application::cleanup() -> void { glfwTerminate(); }
+
+  auto Application::window() -> GLFWwindow* const {}
+
+  auto Application::input_handler() -> input::InputHandler const& { return m_input_handler; }
 }  // namespace bluks::app
