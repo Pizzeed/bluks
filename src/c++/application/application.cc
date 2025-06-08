@@ -12,9 +12,14 @@
 
 namespace bluks::app
 {
-  auto Application::framebuffer_size_callback(GLFWwindow* window, int width, int height) -> void
+  auto Application::framebuffer_size_callback(
+    GLFWwindow* window,
+    int width,
+    int height
+  ) -> void
   {
-    Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    Application* app = static_cast<Application*>(glfwGetWindowUserPointer(window
+    ));
     app->m_window_width = width;
     app->m_window_height = height;
     glViewport(0, 0, width, height);
@@ -32,27 +37,31 @@ namespace bluks::app
     init_graphics();
     m_input_handler = std::make_unique<input::InputHandler>(m_window);
 
-    m_input_handler->bind_to_action(input::InputHandler::Action::Down, [this]() {
-      if(m_game.ongoing())
-        m_game.tick();
-    });
+    m_input_handler
+      ->bind_to_action(input::InputHandler::Action::Down, [this]() {
+        if(m_game.ongoing())
+          m_game.tick();
+      });
 
-    m_input_handler->bind_to_action(input::InputHandler::Action::Left, [this]() {
-      if(m_game.ongoing())
-        m_game.current_shape().move_left();
-    });
-    m_input_handler->bind_to_action(input::InputHandler::Action::Right, [this]() {
-      if(m_game.ongoing())
-        m_game.current_shape().move_right();
-    });
+    m_input_handler
+      ->bind_to_action(input::InputHandler::Action::Left, [this]() {
+        if(m_game.ongoing())
+          m_game.current_shape().move_left();
+      });
+    m_input_handler
+      ->bind_to_action(input::InputHandler::Action::Right, [this]() {
+        if(m_game.ongoing())
+          m_game.current_shape().move_right();
+      });
 
-    m_input_handler->bind_to_action(input::InputHandler::Action::Drop, [this]() {
-      if(m_game.ongoing()) {
-        m_game.current_shape().drop();
-        m_game.check_lines();
-        m_game.spawn_new_shape();
-      }
-    });
+    m_input_handler
+      ->bind_to_action(input::InputHandler::Action::Drop, [this]() {
+        if(m_game.ongoing()) {
+          m_game.current_shape().drop();
+          m_game.check_lines();
+          m_game.spawn_new_shape();
+        }
+      });
     m_input_handler->bind_to_action(input::InputHandler::Action::Up, [this]() {
       if(m_game.ongoing()) {
         m_game.current_shape().rotate_clockwise();
@@ -70,7 +79,13 @@ namespace bluks::app
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    m_window = glfwCreateWindow(m_window_width, m_window_height, "Bluks", NULL, NULL);
+    m_window = glfwCreateWindow(
+      m_window_width,
+      m_window_height,
+      "Bluks",
+      NULL,
+      NULL
+    );
     if(not m_window) {
       std::cout << "Failed to create GLFW window" << std::endl;
       glfwTerminate();
@@ -83,12 +98,17 @@ namespace bluks::app
       return;
     }
     glfwSetWindowUserPointer(m_window, this);
-    glfwSetFramebufferSizeCallback(m_window, &Application::framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(
+      m_window,
+      &Application::framebuffer_size_callback
+    );
 
     u32 vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    char const* v_shader_src = b::embed<"src/shaders/default/default.vert.glsl">().data();
-    char const* f_shader_src = b::embed<"src/shaders/default/default.frag.glsl">().data();
+    char const*
+      v_shader_src = b::embed<"src/shaders/default/default.vert.glsl">().data();
+    char const*
+      f_shader_src = b::embed<"src/shaders/default/default.frag.glsl">().data();
 
     glShaderSource(vertexShader, 1, &v_shader_src, nullptr);
     glCompileShader(vertexShader);
@@ -99,7 +119,8 @@ namespace bluks::app
 
     if(not success) {
       glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-      std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+      std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
+                << infoLog << std::endl;
       glfwTerminate();
     }
 
@@ -112,7 +133,8 @@ namespace bluks::app
 
     if(not success) {
       glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-      std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+      std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
+                << infoLog << std::endl;
       glfwTerminate();
     }
 
@@ -126,7 +148,8 @@ namespace bluks::app
 
     if(! success) {
       glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-      std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED\n" << infoLog << std::endl;
+      std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED\n"
+                << infoLog << std::endl;
       glfwTerminate();
     }
     glDeleteShader(vertexShader);
@@ -161,7 +184,8 @@ namespace bluks::app
       for(auto const& block : m_game.map().blocks()) {
         auto block_verts = get_gl_block_vertices(*block.get());
         u32 vertex_offset = vertices.size() / 6;
-        vertices.insert(vertices.end(), block_verts.cbegin(), block_verts.cend());
+        vertices
+          .insert(vertices.end(), block_verts.cbegin(), block_verts.cend());
         u32 block_inds[6] =
           {vertex_offset + 0,
            vertex_offset + 1,
@@ -195,7 +219,14 @@ namespace bluks::app
       );
 
       // position attribute
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+      glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        6 * sizeof(float),
+        (void*)0
+      );
       glEnableVertexAttribArray(0);
       // color attribute
       glVertexAttribPointer(
@@ -230,7 +261,8 @@ namespace bluks::app
     game::Color map_color {"#111111"};
 
     auto aspect_ratio = static_cast<float>(m_window_width) / m_window_height;
-    auto map_aspect_ratio = static_cast<float>(m_game.map().width()) / m_game.map().height();
+    auto map_aspect_ratio = static_cast<float>(m_game.map().width())
+                          / m_game.map().height();
     float scale_x, scale_y;
 
     if(map_aspect_ratio <= aspect_ratio) {
@@ -265,10 +297,13 @@ namespace bluks::app
     // clang-format on
   }
 
-  auto Application::get_gl_block_vertices(bluks::game::Block const& block) -> std::vector<float>
+  auto Application::get_gl_block_vertices(bluks::game::Block const& block)
+    -> std::vector<float>
   {
-    auto block_width_ndc = m_actual_map_width / m_window_width * 2.0f / m_game.map().width();
-    auto block_height_ndc = m_actual_map_height / m_window_height * 2.0f / m_game.map().height();
+    auto block_width_ndc = m_actual_map_width / m_window_width * 2.0f
+                         / m_game.map().width();
+    auto block_height_ndc = m_actual_map_height / m_window_height * 2.0f
+                          / m_game.map().height();
 
     auto bl_x = m_map_x + block.position().x * block_width_ndc;
     auto bl_y = m_map_y + block.position().y * block_height_ndc;

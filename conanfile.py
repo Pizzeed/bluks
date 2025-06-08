@@ -18,6 +18,7 @@ class BluksRecipe(ConanFile):
 
     def requirements(self):
         self.requires("battery-embed/1.2.19")
+        self.requires("stb/cci.20240531")
         self.requires("glfw/3.4")
         self.requires("glm/1.0.1")
 
