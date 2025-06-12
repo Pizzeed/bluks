@@ -4,7 +4,7 @@
 
 #include <utils/types.h>
 
-namespace bluks::game
+namespace bluks::utils
 {
   class Color
   {
@@ -35,6 +35,12 @@ namespace bluks::game
 
     inline constexpr auto b() const -> u8 { return m_b; }
 
+    inline constexpr auto rf() const -> f32 { return m_r / 255.0; }
+
+    inline constexpr auto gf() const -> f32 { return m_g / 255.0; }
+
+    inline constexpr auto bf() const -> f32 { return m_b / 255.0; }
+
     inline auto hex_rgb() const -> std::string;
 
     inline auto hex_rgba() const -> std::string;
@@ -63,4 +69,4 @@ namespace bluks::game
     u8 m_b = 0;
     u8 m_a = 255;
   };
-}  // namespace bluks::game
+}  // namespace bluks::utils

@@ -57,7 +57,13 @@ b_embed(${PROJECT_NAME}
   src/shaders/default/default.vert.glsl
 )
 b_embed(${PROJECT_NAME}
-src/shaders/default/default.frag.glsl
+  src/shaders/default/default.frag.glsl
+)
+b_embed(${PROJECT_NAME}
+  src/shaders/simple_texture/simple_texture.vert.glsl
+)
+b_embed(${PROJECT_NAME}
+  src/shaders/simple_texture/simple_texture.frag.glsl
 )
 b_embed(${PROJECT_NAME}
   resources/fonts/roboto.ttf

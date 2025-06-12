@@ -83,8 +83,8 @@ namespace bluks::app
       m_window_width,
       m_window_height,
       "Bluks",
-      NULL,
-      NULL
+      nullptr,
+      nullptr
     );
     if(not m_window) {
       std::cout << "Failed to create GLFW window" << std::endl;
@@ -147,7 +147,7 @@ namespace bluks::app
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 
     if(! success) {
-      glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+      glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
       std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED\n"
                 << infoLog << std::endl;
       glfwTerminate();
@@ -174,7 +174,7 @@ namespace bluks::app
       glfwPollEvents();
       m_input_handler->process_keys();
 
-      auto vertices = std::vector<float>();
+      auto vertices = std::vector<f32>();
       auto indices = std::vector<u32>();
       auto map_verts = get_gl_map_background_vertices();
       auto map_inds = std::vector<u32> {0, 1, 3, 1, 2, 3};
@@ -205,7 +205,7 @@ namespace bluks::app
       glBindBuffer(GL_ARRAY_BUFFER, VBO);
       glBufferData(
         GL_ARRAY_BUFFER,
-        vertices.size() * sizeof(float),
+        vertices.size() * sizeof(f32),
         vertices.data(),
         GL_STATIC_DRAW
       );
@@ -224,7 +224,7 @@ namespace bluks::app
         3,
         GL_FLOAT,
         GL_FALSE,
-        6 * sizeof(float),
+        6 * sizeof(f32),
         (void*)0
       );
       glEnableVertexAttribArray(0);
@@ -234,8 +234,8 @@ namespace bluks::app
         3,
         GL_FLOAT,
         GL_FALSE,
-        6 * sizeof(float),
-        (void*)(3 * sizeof(float))
+        6 * sizeof(f32),
+        (void*)(3 * sizeof(f32))
       );
 
       glEnableVertexAttribArray(1);
@@ -256,14 +256,14 @@ namespace bluks::app
 
   auto Application::window() -> GLFWwindow* const { return m_window; }
 
-  auto Application::get_gl_map_background_vertices() -> std::vector<float>
+  auto Application::get_gl_map_background_vertices() -> std::vector<f32>
   {
-    game::Color map_color {"#111111"};
+    utils::Color map_color {"#111111"};
 
-    auto aspect_ratio = static_cast<float>(m_window_width) / m_window_height;
-    auto map_aspect_ratio = static_cast<float>(m_game.map().width())
+    auto aspect_ratio = static_cast<f32>(m_window_width) / m_window_height;
+    auto map_aspect_ratio = static_cast<f32>(m_game.map().width())
                           / m_game.map().height();
-    float scale_x, scale_y;
+    f32 scale_x, scale_y;
 
     if(map_aspect_ratio <= aspect_ratio) {
       m_actual_map_height = m_window_height * 0.95f;
@@ -298,7 +298,7 @@ namespace bluks::app
   }
 
   auto Application::get_gl_block_vertices(bluks::game::Block const& block)
-    -> std::vector<float>
+    -> std::vector<f32>
   {
     auto block_width_ndc = m_actual_map_width / m_window_width * 2.0f
                          / m_game.map().width();

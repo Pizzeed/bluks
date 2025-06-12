@@ -8,7 +8,10 @@ namespace bluks::game
     int x = 0;
     int y = 0;
 
-    bool operator==(Point const& other) const { return x == other.x && y == other.y; }
+    bool operator==(Point const& other) const
+    {
+      return x == other.x && y == other.y;
+    }
 
     bool operator!=(Point const& other) const { return ! (*this == other); }
   };
@@ -16,7 +19,7 @@ namespace bluks::game
   class Block
   {
    public:
-    Block(Color color, Point const& position)
+    Block(utils::utils::Color color, Point const& position)
       : m_color(color)
       , m_position(position)
     {}
@@ -25,12 +28,12 @@ namespace bluks::game
 
     inline auto position() -> Point& { return m_position; }
 
-    inline auto color() const -> Color const& { return m_color; }
+    inline auto color() const -> utils::Color const& { return m_color; }
 
-    inline auto color() -> Color& { return m_color; }
+    inline auto color() -> utils::Color& { return m_color; }
 
    private:
-    Color m_color = {};
+    utils::Color m_color = {};
     Point m_position = {};
   };
 }  // namespace bluks::game
