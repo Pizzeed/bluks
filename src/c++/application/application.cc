@@ -102,58 +102,26 @@ namespace bluks::app
       m_window,
       &Application::framebuffer_size_callback
     );
-
-    u32 vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    char const*
-      v_shader_src = b::embed<"src/shaders/default/default.vert.glsl">().data();
-    char const*
-      f_shader_src = b::embed<"src/shaders/default/default.frag.glsl">().data();
-
-    glShaderSource(vertexShader, 1, &v_shader_src, nullptr);
-    glCompileShader(vertexShader);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if(not success) {
-      glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-      std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-                << infoLog << std::endl;
-      glfwTerminate();
-    }
-
-    u32 fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &f_shader_src, nullptr);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-    if(not success) {
-      glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-      std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
-                << infoLog << std::endl;
-      glfwTerminate();
-    }
-
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-
-    if(! success) {
-      glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-      std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED\n"
-                << infoLog << std::endl;
-      glfwTerminate();
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), (void*)0);
+    glEnableVertexAttribArray(0);
+    // color attribute
+    glVertexAttribPointer(
+      1,
+      3,
+      GL_FLOAT,
+      GL_FALSE,
+      6 * sizeof(f32),
+      (void*)(3 * sizeof(f32))
+    );
+    glEnableVertexAttribArray(1);
+    m_shader_manager = std::make_unique<graphics::shaders::ShaderManager>();
   }
 
   auto Application::run_graphics_loop() -> void
@@ -196,13 +164,7 @@ namespace bluks::app
         indices.insert(indices.end(), block_inds, block_inds + 6);
       }
 
-      u32 VBO, VAO, EBO;
-      glGenVertexArrays(1, &VAO);
-      glGenBuffers(1, &VBO);
-      glGenBuffers(1, &EBO);
-      glBindVertexArray(VAO);
-
-      glBindBuffer(GL_ARRAY_BUFFER, VBO);
+      glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
       glBufferData(
         GL_ARRAY_BUFFER,
         vertices.size() * sizeof(f32),
@@ -210,7 +172,7 @@ namespace bluks::app
         GL_STATIC_DRAW
       );
 
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
       glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         indices.size() * sizeof(u32),
@@ -218,37 +180,13 @@ namespace bluks::app
         GL_STATIC_DRAW
       );
 
-      // position attribute
-      glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        6 * sizeof(f32),
-        (void*)0
-      );
-      glEnableVertexAttribArray(0);
-      // color attribute
-      glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        6 * sizeof(f32),
-        (void*)(3 * sizeof(f32))
-      );
-
-      glEnableVertexAttribArray(1);
-
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindVertexArray(0);
-      // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       glClearColor(.1f, 0.05f, 0.2f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
-      glUseProgram(shaderProgram);
-      glBindVertexArray(VAO);
+      glUseProgram(m_shader_manager->program("simple_color").gl_program_id());
+      glBindVertexArray(m_vao);
       glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
       glfwSwapBuffers(m_window);
+      glBindVertexArray(0);
     }
   }
 

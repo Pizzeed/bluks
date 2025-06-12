@@ -37,16 +37,18 @@ namespace bluks::app
 
     bluks::game::BluksGame m_game;
     std::unique_ptr<input::InputHandler> m_input_handler = nullptr;
-    graphics::shaders::ShaderManager m_shader_manager;
+    std::unique_ptr<graphics::shaders::ShaderManager>
+      m_shader_manager = nullptr;
     GLFWwindow* m_window;
 
+    u32 m_vao = 0;
+    u32 m_vbo = 0;
+    u32 m_ebo = 0;
     u32 m_window_width = 800;
     u32 m_window_height = 600;
     f32 m_map_x = .0;
     f32 m_map_y = .0;
     f32 m_actual_map_width = .0;
     f32 m_actual_map_height = .0;
-
-    u32 shaderProgram;
   };
 }  // namespace bluks::app

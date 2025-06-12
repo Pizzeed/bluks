@@ -36,21 +36,18 @@ namespace bluks::app
   auto TextRender::prepare_buffers() -> void
   {
     glGenVertexArrays(1, &m_vao);
-    glGenBuffers(1, &m_vbo);
     glGenBuffers(1, &m_ebo);
 
     glBindVertexArray(m_vao);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(
-      GL_ARRAY_BUFFER,
-      sizeof(f32) * 4 * 8,  // 4 vertices, 8 = x,y,z,r,g,b,tx,ty
-      nullptr,
-      GL_DYNAMIC_DRAW
-    );
-
-    // Element buffer: 6 indices for 2 triangles (0-1-2, 0-2-3)
-    u32 indices[] = {0, 1, 2, 0, 2, 3};
+    u32 indices[] = {
+      0,
+      1,
+      2,
+      0,
+      2,
+      3,
+    };
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
     glBufferData(
       GL_ELEMENT_ARRAY_BUFFER,
@@ -107,15 +104,17 @@ namespace bluks::app
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(m_vao);
 
-    float px = m_x;
     auto const& info = m_font.stb_info();
     auto const& scale = m_font.scale();
     auto pix_scale = stbtt_ScaleForPixelHeight(&info, scale);
+    auto off = 0;
 
-    for(auto c : m_text) {
+    u32 vbo;
+
+    for(int i = 0; i < m_text.size(); ++i) {
+      auto const& c = m_text[i];
       auto tex_id = m_font.tex_of_glyph(c);
 
-      int ax, lsb;
       int x0, y0, x1, y1;
       stbtt_GetCodepointBitmapBox(
         &info,
@@ -128,13 +127,14 @@ namespace bluks::app
         &y1
       );
 
-      float xpos = px + x0 * scale;
-      float ypos = m_y + y0 * scale;
-      float w = (x1 - x0) * scale;
-      float h = (y1 - y0) * scale;
+      f32 xpos = off + x0 * scale;
+      f32 ypos = m_y + y0 * scale;
+      f32 w = (x1 - x0) * scale;
+      f32 h = (y1 - y0) * scale;
+      off += w;
 
-      // Vertex data: 4 vertices, 8 floats each (x, y, z, r, g, b, u, v)
-      float verts[4][8] =
+      // Vertex data: 4 vertices, 8 f32s each (x, y, z, r, g, b, u, v)
+      f32 verts[4][8] =
         {{xpos,
           ypos + h,
           .0,
@@ -173,13 +173,12 @@ namespace bluks::app
            1.0f,
            0.0f,
          }};
-
+      glGenBuffers(1, &vbo);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
       glBindTexture(GL_TEXTURE_2D, tex_id);
-      glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-      glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), verts);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-      px += ax * pix_scale * scale;
+      glDeleteBuffers(1, &vbo);
     }
 
     glBindVertexArray(0);

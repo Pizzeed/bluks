@@ -35,6 +35,6 @@ namespace bluks::app
     Font m_font;
     utils::Color m_color;
     f32 m_x, m_y;
-    u32 m_vao, m_vbo, m_ebo;
+    u32 m_vao, m_ebo;
   };
 }  // namespace bluks::app

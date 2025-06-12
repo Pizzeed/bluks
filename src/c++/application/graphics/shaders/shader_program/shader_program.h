@@ -12,6 +12,11 @@ namespace bluks::graphics::shaders
       std::string_view const& fragment
     );
 
+    ShaderProgram(ShaderProgram const&) = delete;
+    ShaderProgram& operator=(ShaderProgram const&) = delete;
+    ShaderProgram(ShaderProgram&&) noexcept;
+    ShaderProgram& operator=(ShaderProgram&&) noexcept;
+
     ~ShaderProgram();
 
     auto vertex() const -> std::string const&;
@@ -37,4 +42,9 @@ namespace bluks::graphics::shaders
     u32 m_v_id = -1;
     u32 m_f_id = -1;
   };
+
+  auto make_shader_program(
+    std::string_view const& vsrc,
+    std::string_view const& fsrc
+  ) -> ShaderProgram;
 }  // namespace bluks::graphics::shaders

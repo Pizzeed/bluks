@@ -10,8 +10,8 @@ namespace bluks::graphics::shaders
    public:
     ShaderManager();
     auto contains(std::string const& name) const -> bool;
-    auto program(std::string const& name) const -> ShaderProgram const&;
-    auto insert(std::string const& name, ShaderProgram const& program) -> void;
+    auto program(std::string const& name) -> ShaderProgram const&;
+    auto insert(std::string const& name, ShaderProgram&& program) -> void;
     auto emplace(
       std::string const& name,
       std::string const& vertex_shader,
