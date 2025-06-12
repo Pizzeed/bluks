@@ -1,8 +1,9 @@
+#include <battery/embed.hpp>
 #include <application/graphics/text/font.h>
 
 namespace bluks::app
 {
-  Font::Font(std::vector<u8> const& ttf_raw, float scale)
+  Font::Font(std::vector<u8> const& ttf_raw, f32 scale)
     : m_scale(scale)
   {
     stbtt_InitFont(
@@ -47,7 +48,7 @@ namespace bluks::app
     m_glyph_cache.emplace(glyph_code, tex_id);
   }
 
-  auto Font::cache_glyphs(std::u32string const& str) -> void
+  auto Font::cache_glyphs(std::u32string_view const& str) -> void
   {
     for(auto g : str)
       cache_glyph(g);
@@ -58,4 +59,5 @@ namespace bluks::app
     return m_glyph_cache.at(glyph_code);
   }
 
+  Font Font::m_default = {b::embed<"resources/fonts/roboto.ttf">().vec()};
 }  // namespace bluks::app
