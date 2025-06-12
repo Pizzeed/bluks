@@ -1,5 +1,9 @@
 #include <battery/embed.hpp>
+
 #include <application/graphics/text/font.h>
+
+#define STB_TRUETYPE_IMPLEMENTATION
+#include <stb_truetype.h>
 
 namespace bluks::app
 {

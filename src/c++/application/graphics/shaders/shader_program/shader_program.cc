@@ -33,6 +33,12 @@ namespace bluks::graphics::shaders
     return m_fragment;
   }
 
+  auto ShaderProgram::gl_program_id() const -> u32 { return m_prog_id; }
+
+  auto ShaderProgram::gl_vshader_id() const -> u32 { return m_v_id; }
+
+  auto ShaderProgram::gl_fshader_id() const -> u32 { return m_f_id; }
+
   auto ShaderProgram::compile() -> bool
   {
     if(m_compiled)

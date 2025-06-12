@@ -129,7 +129,7 @@ namespace bluks::app
       );
 
       float xpos = px + x0 * scale;
-      float ypos = y + y0 * scale;
+      float ypos = m_y + y0 * scale;
       float w = (x1 - x0) * scale;
       float h = (y1 - y0) * scale;
 

@@ -21,23 +21,32 @@ namespace bluks::graphics::shaders
     );
   }
 
-  auto ShaderManager::contains(std::string const& name) const -> bool { ret }
+  auto ShaderManager::contains(std::string const& name) const -> bool
+  {
+    return m_programs.contains(name);
+  }
 
   auto ShaderManager::program(std::string const& name) const
     -> ShaderProgram const&
-  {}
+  {
+    return m_programs.at(name);
+  }
 
   auto ShaderManager::insert(
     std::string const& name,
     ShaderProgram const& program
   ) -> void
-  {}
+  {
+    m_programs.emplace(name, program);
+  }
 
   auto ShaderManager::emplace(
     std::string const& name,
     std::string const& vertex_shader,
     std::string const& fragment_shader
   ) -> void
-  {}
+  {
+    m_programs.emplace(name, ShaderProgram {vertex_shader, fragment_shader});
+  }
 
 }  // namespace bluks::graphics::shaders

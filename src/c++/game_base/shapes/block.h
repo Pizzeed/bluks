@@ -19,7 +19,7 @@ namespace bluks::game
   class Block
   {
    public:
-    Block(utils::utils::Color color, Point const& position)
+    Block(utils::Color color, Point const& position)
       : m_color(color)
       , m_position(position)
     {}

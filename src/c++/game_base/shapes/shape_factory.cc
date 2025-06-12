@@ -25,7 +25,8 @@ namespace bluks::game
     switch(m_mode) {
       case RandomizerMode::Balanced:  // Todo
       case RandomizerMode::Random:    // Todo
-      case RandomizerMode::Chaotic: return create_shape(static_cast<ShapeType>(gen(rng)), result);
+      case RandomizerMode::Chaotic:
+        return create_shape(static_cast<ShapeType>(gen(rng)), result);
     }
   }
 
@@ -41,6 +42,7 @@ namespace bluks::game
       case ShapeType::Z: return create_z(result);
       case ShapeType::T: return create_t(result);
       case ShapeType::B: return create_b(result);
+      default: throw std::invalid_argument("Invalid shape type given");
     }
   }
 
@@ -49,7 +51,7 @@ namespace bluks::game
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
     Shape shape {m_map};
-    auto color = Color::purple();
+    auto color = utils::Color::purple();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
       result = false;
@@ -83,7 +85,7 @@ namespace bluks::game
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
     Shape shape {m_map};
-    auto color = Color::red();
+    auto color = utils::Color::red();
     auto new_block = m_map->create_block({{color}, {hc, top - 1}});
     if(not new_block) {
       result = false;
@@ -117,7 +119,7 @@ namespace bluks::game
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
     Shape shape {m_map};
-    auto color = Color::green();
+    auto color = utils::Color::green();
     auto new_block = m_map->create_block({{color}, {hc, top - 1}});
     if(not new_block) {
       result = false;
@@ -151,7 +153,7 @@ namespace bluks::game
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
     Shape shape {m_map};
-    auto color = Color::white();
+    auto color = utils::Color::white();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
       result = false;
@@ -185,7 +187,7 @@ namespace bluks::game
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
     Shape shape {m_map};
-    auto color = Color::yellow();
+    auto color = utils::Color::yellow();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
       result = false;
@@ -219,7 +221,7 @@ namespace bluks::game
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
     Shape shape {m_map};
-    auto color = Color::blue();
+    auto color = utils::Color::blue();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
       result = false;
@@ -253,7 +255,7 @@ namespace bluks::game
     auto hc = m_map->width() / 2;
     auto top = m_map->height() - 1;
     Shape shape {m_map};
-    auto color = Color::orange();
+    auto color = utils::Color::orange();
     auto new_block = m_map->create_block({{color}, {hc, top}});
     if(not new_block) {
       result = false;

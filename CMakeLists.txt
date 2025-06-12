@@ -42,8 +42,10 @@ PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/bluks_game/bluks_game.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/shapes/shape.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/game_base/shapes/shape_factory.cc
-
+  
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/graphics/glad/glad.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/graphics/shaders/shader_program/shader_program.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/graphics/shaders/shader_manager/shader_manager.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/graphics/text/text_render.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/graphics/text/font.cc
 
