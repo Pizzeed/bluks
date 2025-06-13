@@ -18,17 +18,17 @@ project(
 find_package(battery-embed REQUIRED CONFIG)
 find_package(stb REQUIRED)
 find_package(glfw3 REQUIRED)
-find_package(glm REQUIRED)
+find_package(imgui REQUIRED)
 find_package(OpenGL)
 
 add_executable(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-
 include_directories( ${OPENGL_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME}
-PUBLIC
-PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/
+  PUBLIC
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/
+    ${CMAKE_CURRENT_SOURCE_DIR}/bindings/
 )
 
 target_sources(${PROJECT_NAME}
@@ -53,6 +53,12 @@ PRIVATE
 
   ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/application/input/input_handler.cc
 
+  ${CMAKE_CURRENT_SOURCE_DIR}/bindings/imgui_impl_glfw.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/bindings/imgui_impl_glfw.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/bindings/imgui_impl_opengl3.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/bindings/imgui_impl_opengl3.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/bindings/imgui_impl_opengl3_loader.h
+
 )
 
 b_embed(${PROJECT_NAME}
@@ -76,5 +82,5 @@ PRIVATE
   ${OPENGL_LIBRARIES}
   stb::stb
   glfw
-  glm::glm
+  imgui::imgui
 )

@@ -2,8 +2,12 @@
 #include <chrono>
 
 #include <battery/embed.hpp>
+#include "game_base/bluks_game/bluks_game.h"
 #include <application/graphics/glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 #include <utils/color.h>
 #include <game_base/shapes/block.h>
@@ -39,39 +43,45 @@ namespace bluks::app
 
     m_input_handler
       ->bind_to_action(input::InputHandler::Action::Down, [this]() {
-        if(m_game.ongoing())
+        if(m_game.state() == game::BluksGame::GameState::Ongoing)
           m_game.tick();
       });
 
     m_input_handler
       ->bind_to_action(input::InputHandler::Action::Left, [this]() {
-        if(m_game.ongoing())
+        if(m_game.state() == game::BluksGame::GameState::Ongoing)
           m_game.current_shape().move_left();
       });
     m_input_handler
       ->bind_to_action(input::InputHandler::Action::Right, [this]() {
-        if(m_game.ongoing())
+        if(m_game.state() == game::BluksGame::GameState::Ongoing)
           m_game.current_shape().move_right();
       });
 
     m_input_handler
       ->bind_to_action(input::InputHandler::Action::Drop, [this]() {
-        if(m_game.ongoing()) {
+        if(m_game.state() == game::BluksGame::GameState::Ongoing) {
           m_game.current_shape().drop();
           m_game.check_lines();
           m_game.spawn_new_shape();
         }
+        else
+          m_game.start();
       });
     m_input_handler->bind_to_action(input::InputHandler::Action::Up, [this]() {
-      if(m_game.ongoing()) {
+      if(m_game.state() == game::BluksGame::GameState::Ongoing) {
         m_game.current_shape().rotate_clockwise();
       }
     });
-
-    m_game.start();
   }
 
-  Application::~Application() { cleanup(); }
+  Application::~Application()
+  {
+    cleanup();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+  }
 
   auto Application::init_graphics() -> void
   {
@@ -86,6 +96,7 @@ namespace bluks::app
       nullptr,
       nullptr
     );
+    glfwSetWindowSizeLimits(m_window, 800, 600, GLFW_DONT_CARE, GLFW_DONT_CARE);
     if(not m_window) {
       std::cout << "Failed to create GLFW window" << std::endl;
       glfwTerminate();
@@ -122,6 +133,15 @@ namespace bluks::app
     );
     glEnableVertexAttribArray(1);
     m_shader_manager = std::make_unique<graphics::shaders::ShaderManager>();
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+    ImFont* font = io.Fonts
+                     ->AddFontFromFileTTF("resources/fonts/roboto.ttf", 32.f);
   }
 
   auto Application::run_graphics_loop() -> void
@@ -130,8 +150,44 @@ namespace bluks::app
     using namespace std::chrono;
 
     auto last_time = steady_clock::now();
-
     while(! glfwWindowShouldClose(m_window)) {
+      ImGui_ImplOpenGL3_NewFrame();
+      ImGui_ImplGlfw_NewFrame();
+      ImGui::NewFrame();
+      auto& io = ImGui::GetIO();
+      ImGui::SetNextWindowSize({io.DisplaySize.x, io.DisplaySize.y});
+      ImGui::SetNextWindowPos({0, 0});
+      ImGui::Begin(
+        "Overlay",
+        nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize
+          | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar
+          | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground
+          | ImGuiWindowFlags_NoSavedSettings
+          | ImGuiWindowFlags_NoFocusOnAppearing
+          | ImGuiWindowFlags_NoBringToFrontOnFocus
+          | ImGuiWindowFlags_AlwaysAutoResize
+      );
+
+      ImGui::SetCursorPos({50, 50});
+      ImGui::Text("Score: %i", m_game.score());
+
+      if(m_game.state() == game::BluksGame::GameState::NotStarted) {
+        ImGui::SetCursorPos(
+          {(io.DisplaySize.x - 200) * .5f, (io.DisplaySize.y - 50) * .5f}
+        );
+        if(ImGui::Button("START", {200, 50})) {
+          m_game.start();
+        }
+      }
+      else if(m_game.state() == game::BluksGame::GameState::GameOver) {
+        ImGui::SetCursorPos(
+          {(io.DisplaySize.x - 500) * .5f, (io.DisplaySize.y - 50) * .5f}
+        );
+        ImGui::Button("GAME OVER! RESTART?", {500, 50});
+      }
+      ImGui::End();
+
       auto current_time = steady_clock::now();
       auto elapsed = duration_cast<seconds>(current_time - last_time);
 
@@ -185,8 +241,11 @@ namespace bluks::app
       glUseProgram(m_shader_manager->program("simple_color").gl_program_id());
       glBindVertexArray(m_vao);
       glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-      glfwSwapBuffers(m_window);
       glBindVertexArray(0);
+
+      ImGui::Render();
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+      glfwSwapBuffers(m_window);
     }
   }
 
@@ -251,11 +310,11 @@ namespace bluks::app
     auto b = block.color().b() / 255.f;
 
     // clang-format off
-return {
-  bl_x, bl_y, 0.1f, r, g, b,                                       // bottom-left
-  bl_x, bl_y + block_height_ndc, 0.1f, r, g, b,                    // top-left
-  bl_x + block_width_ndc, bl_y + block_height_ndc, 0.1f, r, g, b,  // top-right
-  bl_x + block_width_ndc, bl_y, 0.1f, r, g, b                      // bottom-right
-};
+    return {
+      bl_x, bl_y, 0.1f, r, g, b,                                       // bottom-left
+      bl_x, bl_y + block_height_ndc, 0.1f, r, g, b,                    // top-left
+      bl_x + block_width_ndc, bl_y + block_height_ndc, 0.1f, r, g, b,  // top-right
+      bl_x + block_width_ndc, bl_y, 0.1f, r, g, b                      // bottom-right
+    };
   }
 }  // namespace bluks::app

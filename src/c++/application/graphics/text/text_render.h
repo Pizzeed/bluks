@@ -26,7 +26,8 @@ namespace bluks::app
       utils::Color const& color = utils::Color::white()
     );
 
-    auto render(graphics::shaders::ShaderProgram const& material) -> void;
+    auto render(u32 shader_program_id) -> void;
+    auto cleanup() -> void;
 
    private:
     auto prepare_buffers() -> void;

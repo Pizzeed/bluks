@@ -94,13 +94,8 @@ namespace bluks::app
 
   using namespace bluks::graphics::shaders;
 
-  auto TextRender::render(ShaderProgram const& material) -> void
+  auto TextRender::render(u32 shader_program_id) -> void
   {
-    if(not material.is_ready())
-      std::cout << "Unable to render text: material is not ready" << std::endl;
-
-    glUseProgram(material.gl_program_id());
-
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(m_vao);
 
@@ -177,6 +172,8 @@ namespace bluks::app
       glBindBuffer(GL_ARRAY_BUFFER, vbo);
       glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
       glBindTexture(GL_TEXTURE_2D, tex_id);
+
+      glUseProgram(shader_program_id);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       glDeleteBuffers(1, &vbo);
     }
@@ -185,4 +182,9 @@ namespace bluks::app
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
+  auto TextRender::cleanup() -> void
+  {
+    glDeleteBuffers(1, &m_ebo);
+    glDeleteVertexArrays(1, &m_vao);
+  }
 }  // namespace bluks::app

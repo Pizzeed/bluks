@@ -15,3 +15,5 @@ build/
 .cache
 .idea
 libs/
+bindings/
+imgui.ini

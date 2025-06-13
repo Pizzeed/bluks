@@ -11,6 +11,14 @@ namespace bluks::game
   class BluksGame
   {
    public:
+    enum class GameState
+    {
+      NotStarted,
+      Ongoing,
+      Paused,
+      GameOver
+    };
+
     BluksGame();
 
     auto start() -> void;
@@ -29,11 +37,11 @@ namespace bluks::game
 
     inline auto current_shape() -> Shape& { return m_current_shape; }
 
-    inline auto tick_period() -> f32 { return m_tick_period; }
+    inline auto tick_period() const -> f32 { return m_tick_period; }
 
-    inline auto paused() -> bool { return m_paused; }
+    inline auto state() const -> GameState { return m_state; }
 
-    inline auto ongoing() -> bool { return m_ongoing; }
+    inline auto score() const -> u32 { return m_score; }
 
     auto spawn_new_shape() -> void;
 
@@ -41,9 +49,8 @@ namespace bluks::game
 
    private:
     u32 m_score = 0;
+    GameState m_state = GameState::NotStarted;
     f32 m_tick_period = 1;  // sec
-    bool m_paused = false;
-    bool m_ongoing = false;
     Shape m_current_shape = {&m_map};
     Map m_map = {};
     GameSettings m_settings = {};
